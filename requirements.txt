@@ -3,7 +3,6 @@ fastapi==0.110.1
 uvicorn[standard]==0.29.0
 
 # --- LangChain split-packages (all built to work together) ---
-langchain==0.2.1
 langchain-community==0.2.1
 langchain-openai==0.1.8
 langchain-text-splitters==0.2.1
