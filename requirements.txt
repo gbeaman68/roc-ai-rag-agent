@@ -1,1 +1,6 @@
+fastapi
+uvicorn[standard]
+langchain
+langchain-openai
+faiss-cpu
 fastapi[all]
