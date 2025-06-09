@@ -1,60 +1,71 @@
-# main.py  – ROC-AI Retrieval + Citation micro-service
-# -----------------------------------------------
-# FastAPI + LangChain 0.2.x (community split) + FAISS
-# -----------------------------------------------
-
+# main.py  – FastAPI RAG micro-service
+import os
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
-# LangChain imports (v0.2.x)
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain.chat_models import ChatOpenAI
+from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
+from langchain.prompts import ChatPromptTemplate
 from langchain.chains import create_retrieval_chain
 
-# -------------------------------------------------------------------
-# 1. Load (or create) the vector store
-# -------------------------------------------------------------------
-INDEX_PATH = "index"   # folder holding index.faiss / index.pkl
+# -------------------------------------------------
+# 1.  Vector-store (FAISS) – load or fall back
+# -------------------------------------------------
+INDEX_PATH = "index"          # folder created in the repo
+INDEX_NAME = "index"          # <index_name>.faiss / <index_name>.pkl
 
-embeddings = OpenAIEmbeddings()
-try:
-    # If you committed an index folder, load it (allow pickle deserialization)
-    db = FAISS.load_local(
-        INDEX_PATH,
-        embeddings,
-        allow_dangerous_deserialization=True
-    )
-except Exception:
-    # Fallback: boot an empty store so the app still runs
-    db = FAISS.from_texts(["placeholder"], embeddings)
+def load_vectorstore():
+    embeddings = OpenAIEmbeddings()
+    try:
+        # Try to load a real index if it exists
+        return FAISS.load_local(INDEX_PATH, embeddings, index_name=INDEX_NAME)
+    except Exception:
+        # Otherwise spin up a placeholder so the service still starts
+        return FAISS.from_texts(["placeholder"], embeddings)
 
-# -------------------------------------------------------------------
-# 2. Build a minimal RAG chain
-# -------------------------------------------------------------------
-llm       = ChatOpenAI(model="gpt-4o-mini", temperature=0)
-retriever = db.as_retriever(search_kwargs={"k": 4})
-chain     = create_retrieval_chain(llm, retriever, return_source_documents=True)
+vectorstore = load_vectorstore()
+retriever   = vectorstore.as_retriever(search_kwargs={"k": 3})
 
-# -------------------------------------------------------------------
-# 3. FastAPI app
-# -------------------------------------------------------------------
+# -------------------------------------------------
+# 2.  Retrieval-augmented generation chain
+# -------------------------------------------------
+PROMPT_TMPL = """
+You are a helpful assistant. Use the context below to answer the question.
+
+<context>
+{context}
+</context>
+
+Question: {question}
+Answer:
+""".strip()
+
+prompt   = ChatPromptTemplate.from_template(PROMPT_TMPL)
+llm      = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
+qa_chain = prompt | llm           # “combine_docs_chain” in LC docs
+
+# New LC 0.2.x signature → no ‘return_source_documents’ kwarg
+chain = create_retrieval_chain(retriever, qa_chain)
+
+# -------------------------------------------------
+# 3.  FastAPI wiring
+# -------------------------------------------------
 app = FastAPI()
 
-class Q(BaseModel):
+class Query(BaseModel):
     question: str
-    history: list[str] | None = []
 
 @app.post("/ask")
-def ask(q: Q):
-    """Answer a question and return APA-style sources."""
+async def ask(q: Query):
+    """
+    POST {"question": "..."}  →  {"answer": "...", "context": [...]}
+    """
     try:
-        result  = chain.invoke({"input": q.question, "chat_history": q.history})
-        answer  = result["answer"]
-        sources = [
-            f"{i+1}. {d.metadata.get('title', 'Untitled')} "
-            f"({d.metadata.get('year', 'n.d.')})"
-            for i, d in enumerate(result.get("source_documents", []))
-        ]
-        return {"answer": answer, "sources": "\n".join(sources)}
+        result = chain.invoke({"question": q.question})
+        return {
+            "answer":  result["answer"],
+            "context": result["context"],   # list of strings (docs merged by LC)
+        }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(_
