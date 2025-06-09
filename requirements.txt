@@ -1,14 +1,13 @@
-# core web server
+# --- web server ---
 fastapi==0.110.1
 uvicorn[standard]==0.29.0
 
-# LangChain & OpenAI bindings
+# --- LangChain split-packages (all built to work together) ---
 langchain==0.2.1
-langchain-openai==0.1.8
-pydantic<2           # LangChain still expects Pydantic v1.x
-
-# vector search library
-faiss-cpu==1.7.4     # light-weight CPU build—no GCC on Render required
 langchain-community==0.2.1
-langchain-core==0.2.1
+langchain-openai==0.1.8
 langchain-text-splitters==0.2.1
+
+# --- other deps ---
+faiss-cpu==1.7.4
+pydantic<2          # keeps FastAPI + LangChain happy
