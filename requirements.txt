@@ -9,3 +9,6 @@ pydantic<2           # LangChain still expects Pydantic v1.x
 
 # vector search library
 faiss-cpu==1.7.4     # light-weight CPU build—no GCC on Render required
+langchain-community==0.2.1
+langchain-core==0.2.1
+langchain-text-splitters==0.2.1
