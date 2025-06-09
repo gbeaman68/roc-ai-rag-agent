@@ -2,8 +2,7 @@
 import os
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-
-from langchain.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain.prompts import ChatPromptTemplate
