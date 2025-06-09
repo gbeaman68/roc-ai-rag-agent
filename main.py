@@ -68,4 +68,4 @@ async def ask(q: Query):
             "context": result["context"],   # list of strings (docs merged by LC)
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(_
+        raise HTTPException(status_code=500, detail=str(e))
