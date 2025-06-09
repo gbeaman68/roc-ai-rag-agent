@@ -1,20 +1,43 @@
-# main.py  —  50 lines total
+# main.py  – ROC-AI Retrieval + Citation micro-service
+# -----------------------------------------------
+# FastAPI + LangChain 0.2.x (community split) + FAISS
+# -----------------------------------------------
+
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from langchain_openai import ChatOpenAI
-from langchain_community.embeddings import OpenAIEmbeddings
-from langchain.vectorstores import FAISS
+
+# LangChain imports (v0.2.x)
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_community.vectorstores import FAISS
 from langchain.chains import create_retrieval_chain
 
-# ---- 1. Load your vector store (exported from re:tune as `index.faiss`) ----
-db = FAISS.load_local("index", OpenAIEmbeddings())
+# -------------------------------------------------------------------
+# 1. Load (or create) the vector store
+# -------------------------------------------------------------------
+INDEX_PATH = "index"   # folder holding index.faiss / index.pkl
 
-# ---- 2. Build a minimal RAG chain ----------------------------------------
-model     = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+embeddings = OpenAIEmbeddings()
+try:
+    # If you committed an index folder, load it (allow pickle deserialization)
+    db = FAISS.load_local(
+        INDEX_PATH,
+        embeddings,
+        allow_dangerous_deserialization=True
+    )
+except Exception:
+    # Fallback: boot an empty store so the app still runs
+    db = FAISS.from_texts(["placeholder"], embeddings)
+
+# -------------------------------------------------------------------
+# 2. Build a minimal RAG chain
+# -------------------------------------------------------------------
+llm       = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 retriever = db.as_retriever(search_kwargs={"k": 4})
-chain     = create_retrieval_chain(model, retriever)
+chain     = create_retrieval_chain(llm, retriever, return_source_documents=True)
 
-# ---- 3. Define the FastAPI app -------------------------------------------
+# -------------------------------------------------------------------
+# 3. FastAPI app
+# -------------------------------------------------------------------
 app = FastAPI()
 
 class Q(BaseModel):
@@ -23,12 +46,14 @@ class Q(BaseModel):
 
 @app.post("/ask")
 def ask(q: Q):
+    """Answer a question and return APA-style sources."""
     try:
-        result = chain.invoke({"input": q.question, "chat_history": q.history})
+        result  = chain.invoke({"input": q.question, "chat_history": q.history})
         answer  = result["answer"]
         sources = [
-            f"{i+1}. {doc.metadata['title']} ({doc.metadata.get('year','n.d.')})"
-            for i, doc in enumerate(result["source_documents"])
+            f"{i+1}. {d.metadata.get('title', 'Untitled')} "
+            f"({d.metadata.get('year', 'n.d.')})"
+            for i, d in enumerate(result.get("source_documents", []))
         ]
         return {"answer": answer, "sources": "\n".join(sources)}
     except Exception as e:
