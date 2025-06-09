@@ -1,6 +1,11 @@
-fastapi
-uvicorn[standard]
-langchain
-langchain-openai
-faiss-cpu
-fastapi[all]
+# core web server
+fastapi==0.110.1
+uvicorn[standard]==0.29.0
+
+# LangChain & OpenAI bindings
+langchain==0.2.1
+langchain-openai==0.1.8
+pydantic<2           # LangChain still expects Pydantic v1.x
+
+# vector search library
+faiss-cpu==1.7.4     # light-weight CPU build—no GCC on Render required
