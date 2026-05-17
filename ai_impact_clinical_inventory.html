@@ -4,128 +4,29 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AI-IMPACT Clinical Inventory</title>
+  <style>body{font-family:Inter,system-ui,sans-serif;background:#0f172a;color:#f8fafc;margin:0}.container{max-width:1100px;margin:20px auto;padding:16px}.pill,.btn,.anchor,.sum,.info-card,.domain,.modal-card,.report-card,.badge{border:1px solid #334155;background:#111827;border-radius:12px}.pill-row,.left,.right,.toolbar,.switch-wrap,.rate,.meta,.modal-header{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.pill{padding:6px 10px;font-size:.82rem}.toolbar{justify-content:space-between}.btn{padding:8px 12px;color:#fff;cursor:pointer}.btn.primary{background:#2563eb}.switch{width:46px;height:24px;border-radius:999px;background:#1f2937;border:1px solid #475569;position:relative;cursor:pointer}.switch:after{content:'';position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#cbd5e1;transition:.2s}.switch.on:after{left:24px;background:#93c5fd}.info-card{padding:10px 12px;margin:10px 0}.anchors{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.anchor,.sum{padding:8px 10px}.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px}.domain{margin:12px 0}.domain>header{padding:12px;display:flex;justify-content:space-between;cursor:pointer}.body{padding:0 10px 10px}.qcard{margin:10px 0;padding:10px;border:1px solid #334155;border-radius:10px;background:#0b1220}.qhead{display:flex;gap:10px}.qnum{width:34px;height:34px;background:#1e293b;border-radius:50%;display:grid;place-items:center}.qtext{margin:6px 0 0}.chip{padding:6px 8px;border:1px solid #475569;border-radius:999px;cursor:pointer;font-size:.85rem}.chip.active{background:#1d4ed8}textarea{width:100%;min-height:64px;margin-top:8px;border-radius:10px;background:#111827;color:#fff;border:1px solid #334155;padding:8px}.badge{padding:4px 8px;font-size:.8rem}.badge.high{color:#fecaca;border-color:#ef4444}.badge.mid{color:#fde68a;border-color:#f59e0b}.badge.low{color:#bbf7d0;border-color:#22c55e}.modal{position:fixed;inset:0;background:rgba(2,6,23,.7);display:none;padding:16px}.modal.show{display:block}.modal-card{max-width:980px;margin:20px auto;padding:14px}.modal-body{max-height:72vh;overflow:auto}.small-muted{color:#94a3b8;font-size:.86rem}.report-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-top:10px}.report-card{padding:10px}.title{font-weight:700}.kv{display:grid;grid-template-columns:1fr auto;gap:4px 8px}.toast{position:fixed;bottom:16px;right:16px;background:#1e293b;padding:8px 12px;border-radius:8px;display:none}.toast.show{display:block}</style>
 </head>
 <body>
 <div class="container">
-  <header>
-    <h1>AI-IMPACT Clinical Inventory</h1>
-    <h2>A semi-structured interviewing tool for exploring AI's role in presenting concerns</h2>
-    <p><b>Not a diagnostic instrument.</b> Use for guided interviewing and case conceptualization only. 0/1/2/3 anchors are response descriptors, not validated severity scores or cutoffs.</p>
-    <div class="pill-row">
-      <span class="pill">Adolescents &amp; Adults - Self-report phrasing</span>
-      <span class="pill">Children under 13 - Clinician-administered prompts</span>
-      <span class="pill">Do not compute a total score</span>
-      <span class="pill">Use domain patterns to guide follow-up</span>
-    </div>
-  </header>
-
-  <div class="toolbar">
-    <div class="left">
-      <div class="switch-wrap" title="Toggle between adolescent/adult phrasing and child prompts">
-        <span>Adolescent &amp; Adult</span>
-        <div class="switch" id="ageSwitch" role="switch" aria-checked="false" tabindex="0"></div>
-        <span>Child</span>
-      </div>
-      <button class="btn" id="expandAllBtn">Expand all</button>
-      <button class="btn" id="collapseAllBtn">Collapse all</button>
-    </div>
-    <div class="right">
-      <button class="btn" id="clearAllBtn">Clear all</button>
-      <button class="btn primary" id="summaryBtn">Generate summary</button>
-      <button class="btn" id="printBtn">Print</button>
-    </div>
-  </div>
-
-  <div class="info-card">
-    <b>How to use</b> - Use initial items as starting points, then probe with how/what questions about <b>frequency</b>, <b>affect</b> during vs after AI use, and <b>function</b> (comfort, avoidance, reassurance, companionship, scaffolding). You do not need to ask every item. If one domain is elevated, go deeper there and briefly screen the others.
-  </div>
-
-  <div class="anchors">
-    <div class="anchor"><b>0</b>Not at all</div>
-    <div class="anchor"><b>1</b>Rarely</div>
-    <div class="anchor"><b>2</b>Sometimes</div>
-    <div class="anchor"><b>3</b>Often or always</div>
-  </div>
-
-  <div class="summary-bar" id="summaryBar">
-    <div class="summary-grid" id="summaryGrid"></div>
-  </div>
-
-  <div id="domains"></div>
-</div>
-
-<div class="modal" id="modal">
-  <div class="modal-card" role="dialog" aria-modal="true" aria-label="Session summary">
-    <div class="modal-header">
-      <h4>AI-IMPACT Session Summary</h4>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button class="btn" id="copyBtn">Copy</button>
-        <button class="btn" onclick="window.print()">Print</button>
-        <button class="btn" id="closeBtn">Close</button>
-      </div>
-    </div>
-    <div class="modal-body">
-      <div class="small-muted">Reminder - Anchors are descriptors only; do not interpret as validated severity scores or clinical cutoffs. Do not compute a total score.</div>
-      <div id="report"></div>
-    </div>
-  </div>
-</div>
-
-<div class="toast" id="toast">Copied</div>
-
+<header><h1>AI-IMPACT Clinical Inventory</h1><h2>A semi-structured interviewing tool for exploring AI's role in presenting concerns</h2><p><b>Not a diagnostic instrument.</b> Use for guided interviewing and case conceptualization only. 0/1/2/3 anchors are response descriptors, not validated severity scores or cutoffs.</p><div class="pill-row"><span class="pill">Adolescents & Adults - Self-report phrasing</span><span class="pill">Children under 13 - Clinician-administered prompts</span><span class="pill">Do not compute a total score</span><span class="pill">Use domain patterns to guide follow-up</span></div></header>
+<div class="toolbar"><div class="left"><div class="switch-wrap"><span>Adolescent & Adult</span><div class="switch" id="ageSwitch" role="switch" aria-checked="false" tabindex="0"></div><span>Child</span></div><button class="btn" id="expandAllBtn">Expand all</button><button class="btn" id="collapseAllBtn">Collapse all</button></div><div class="right"><button class="btn" id="clearAllBtn">Clear all</button><button class="btn primary" id="summaryBtn">Generate summary</button><button class="btn" id="printBtn">Print</button></div></div>
+<div class="info-card"><b>How to use</b> - Use initial items as starting points, then probe with how/what questions about <b>frequency</b>, <b>affect</b> during vs after AI use, and <b>function</b> (comfort, avoidance, reassurance, companionship, scaffolding). You do not need to ask every item. If one domain is elevated, go deeper there and briefly screen the others.</div>
+<div class="anchors"><div class="anchor"><b>0</b>Not at all</div><div class="anchor"><b>1</b>Rarely</div><div class="anchor"><b>2</b>Sometimes</div><div class="anchor"><b>3</b>Often or always</div></div>
+<div class="summary-bar" id="summaryBar"><div class="summary-grid" id="summaryGrid"></div></div><div id="domains"></div></div>
+<div class="modal" id="modal"><div class="modal-card" role="dialog" aria-modal="true" aria-label="Session summary"><div class="modal-header"><h4>AI-IMPACT Session Summary</h4><div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="btn" id="copyBtn">Copy</button><button class="btn" onclick="window.print()">Print</button><button class="btn" id="closeBtn">Close</button></div></div><div class="modal-body"><div class="small-muted">Reminder - Anchors are descriptors only; do not interpret as validated severity scores or clinical cutoffs. Do not compute a total score.</div><div id="report"></div></div></div></div><div class="toast" id="toast">Copied</div>
 <script>
-  const responseLabels = {0:'Not at all',1:'Rarely',2:'Sometimes',3:'Often or always'};
-
-  const domainsData = [
-    {
-      key:'d1',
-      title:'1. AI & Worry, Stress, or Reassurance',
-      adult:[
-        'I feel anxious or on edge when I cannot access AI tools.',
-        'I worry about whether AI is giving me the right answer, even after I get one.',
-        'I use AI to check or rehearse things before doing them on my own, such as conversations, decisions, or tasks.',
-        'I feel calmer or more in control only when I know AI is available to help me.',
-        'When AI is unavailable or slow, I feel a sense of panic or dread.'
-      ],
-      child:[
-        "What happens when you can't use AI - like if the app isn't working or a grown-up says not right now? How does that feel?",
-        "When AI helps you with something, do you ever keep worrying that maybe it got it wrong, even after you already got the answer?",
-        "Do you ever check with AI first before you do something on your own - like before a conversation, or before you try a task at school?",
-        "Does it feel better knowing you can use AI if you need it? Like does having it available help you feel okay?",
-        "What's it like when AI isn't working or you just can't use it? Does it ever make you feel worried or like something is really wrong?"
-      ],
-      note:'This domain asks whether AI has become part of how the client manages worry. Probe reassurance/checking, rehearsal, avoidance, and what would happen without checking first.'
-    },
-    {
-      key:'d2',
-      title:'2. AI & Mood, Loneliness, or Avoidance',
-      adult:[
-        'I use AI when I feel sad, lonely, bored, rejected, overwhelmed, or disconnected from other people.',
-        'I turn to AI instead of doing things that usually help me feel better, such as resting, going outside, exercising, doing hobbies, or talking to someone.',
-        'I use AI to feel better or avoid things in life, but I feel more isolated, disconnected, or stuck afterward.',
-        'I use AI to avoid difficult feelings, responsibilities, schoolwork, work tasks, or conversations.',
-        'Using AI feels like one of the main ways I get through the day emotionally.',
-        'I spend time with AI even when I know I would probably benefit more from real-life support, activity, or connection.'
-      ],
-      child:[
-        "When you feel sad, bored, lonely, or kind of off - what do you usually do? Do you ever go to AI?",
-        "When you're feeling bad, do you still do things like go outside, talk to a friend, or do something you enjoy - or does using AI kind of take over instead?",
-        "After using AI for a while when you were feeling bad - how do you feel afterward? Better, or sometimes more alone or stuck than before?",
-        "Is there anything you use AI to get out of - like schoolwork, a hard conversation, or something that feels overwhelming?",
-        "Would you say that using AI is one of the main ways you get through hard days?",
-        "Are there times when part of you knows you should probably talk to someone or do something else - but you use AI instead?"
-      ],
-      note:'This domain asks whether AI has become a mood management strategy. Clarify whether it replaces activity/connection/rest and whether the client feels better or more stuck afterward.'
-    }
-  ];
-
-  const state = { isChild:false, expanded:{}, responses:{}, notes:{} };
-  function ensureDomain(key){ if(!state.responses[key]) state.responses[key] = {}; if(!state.notes[key]) state.notes[key] = {}; }
-  function getQuestions(domain){ return state.isChild ? domain.child : domain.adult; }
-  function toast(msg){ const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(window.__toastTimer); window.__toastTimer = setTimeout(() => t.classList.remove('show'), 1300); }
-  function domainCounts(domain){ ensureDomain(domain.key); const qs = getQuestions(domain); const res = state.responses[domain.key]; const counts = {0:0,1:0,2:0,3:0,blank:0}; qs.forEach((q, idx) => { const v = res[idx]; if(v===0||v===1||v===2||v===3) counts[v] += 1; else counts.blank += 1; }); return counts; }
-  function renderSummaryBar(){ const grid = document.getElementById('summaryGrid'); grid.innerHTML = ''; domainsData.forEach(d => { const counts = domainCounts(d); const el = document.createElement('div'); el.className = 'sum'; el.innerHTML = '<div class="t">' + d.title.replace(/^[0-9]+\.\s*/, '') + '</div>' + '<div class="v">2s <b>' + counts[2] + '</b> | 3s <b>' + counts[3] + '</b></div>'; grid.appendChild(el); }); }
-  renderSummaryBar();
-</script>
-</body>
-</html>
+const responseLabels={0:'Not at all',1:'Rarely',2:'Sometimes',3:'Often or always'};
+const domainsData=[{key:'d1',title:'1. AI & Worry, Stress, or Reassurance',adult:['I feel anxious or on edge when I cannot access AI tools.','I worry about whether AI is giving me the right answer, even after I get one.','I use AI to check or rehearse things before doing them on my own, such as conversations, decisions, or tasks.','I feel calmer or more in control only when I know AI is available to help me.','When AI is unavailable or slow, I feel a sense of panic or dread.'],child:["What happens when you can't use AI - like if the app isn't working or a grown-up says not right now? How does that feel?","When AI helps you with something, do you ever keep worrying that maybe it got it wrong, even after you already got the answer?","Do you ever check with AI first before you do something on your own - like before a conversation, or before you try a task at school?","Does it feel better knowing you can use AI if you need it? Like does having it available help you feel okay?","What's it like when AI isn't working or you just can't use it? Does it ever make you feel worried or like something is really wrong?"],note:'This domain asks whether AI has become part of how the client manages worry. Probe reassurance/checking, rehearsal, avoidance, and what would happen without checking first.'},{key:'d2',title:'2. AI & Mood, Loneliness, or Avoidance',adult:['I use AI when I feel sad, lonely, bored, rejected, overwhelmed, or disconnected from other people.','I turn to AI instead of doing things that usually help me feel better, such as resting, going outside, exercising, doing hobbies, or talking to someone.','I use AI to feel better or avoid things in life, but I feel more isolated, disconnected, or stuck afterward.','I use AI to avoid difficult feelings, responsibilities, schoolwork, work tasks, or conversations.','Using AI feels like one of the main ways I get through the day emotionally.','I spend time with AI even when I know I would probably benefit more from real-life support, activity, or connection.'],child:["When you feel sad, bored, lonely, or kind of off - what do you usually do? Do you ever go to AI?","When you're feeling bad, do you still do things like go outside, talk to a friend, or do something you enjoy - or does using AI kind of take over instead?","After using AI for a while when you were feeling bad - how do you feel afterward? Better, or sometimes more alone or stuck than before?","Is there anything you use AI to get out of - like schoolwork, a hard conversation, or something that feels overwhelming?","Would you say that using AI is one of the main ways you get through hard days?","Are there times when part of you knows you should probably talk to someone or do something else - but you use AI instead?"],note:'This domain asks whether AI has become a mood management strategy. Clarify whether it replaces activity/connection/rest and whether the client feels better or more stuck afterward.'},{key:'d3',title:'3. AI & Difficulty Stopping',adult:['I find it very hard to stop using AI once I start, even when I intended to use it briefly.','I feel irritable, restless, or upset when I have to go without AI tools for a period of time.','I have tried to cut back on how much I use AI but have not been able to.','I use AI more and more to get the same sense of help or relief that I used to get from less of it.','I have continued using AI heavily even when it has caused problems at school, work, or in my relationships.','I think about AI or what I will do with it even when I am not using it.'],child:['When you start using AI, do you ever lose track of time?',"How do you feel when someone says it's time to stop using AI, or when you just can't use it for a while?","Have you ever told yourself you'd only use AI a little bit - but then that didn't really happen?",'Does it feel like you need to use AI more and more to get that same good feeling you used to get from less of it?','Has a teacher, parent, or friend ever said something to you about how much you use AI, or gotten upset about it?',"Even when you're doing something else - at school, at dinner, or with friends - do you find yourself thinking about AI or what you're going to do with it later?"],note:'This domain is about perceived control of use, not frequency alone. Explore mood regulation through AI use as a driver of difficulty stopping.'},{key:'d4',title:'4. AI & Connection to Others',adult:['I prefer talking to AI over talking to people, even when people are available.','I feel more understood by AI than by the people in my life.','I share personal thoughts, feelings, or problems with AI that I would not share with people I know.','I have found myself thinking of an AI as a friend, companion, or as if it cares about me.','I spend less time with friends, family, or peers because I am engaging with AI instead.','When I have a problem or feel upset, my first instinct is to go to AI rather than a person.'],child:['If you wanted to talk about something - would you rather talk to a person or use AI? Which one feels easier?','Do you ever feel like AI really gets you - maybe more than the people in your life do?',"Is there stuff you tell AI that you probably wouldn't tell a friend, a parent, or a teacher?",'Do you ever feel like an AI is kind of like a friend - or like it actually cares about you?','Has time with AI kind of taken the place of time you used to spend with friends or family?',"When something goes wrong or you're upset - do you want to go find a person, or do you want to use AI?"],note:'This domain asks whether AI is replacing rather than supplementing human connection. Ask about support network and what reaching out to people feels like.'},{key:'d5',title:'5. AI & Thinking, Learning, Decisions, or Daily Life',adult:['I rely on AI to start, organize, write, decide, remember, plan, or solve problems that I used to handle more independently.','I feel less confident thinking, learning, writing, creating, or making decisions without AI.','When I use AI to complete tasks, I sometimes skip steps I would otherwise need to think through myself.','I have trouble starting or finishing tasks unless I use AI to guide me.','My AI use affects my attention, memory, patience, persistence, or ability to work through frustration.','AI use has created real-life problems for me, such as missed responsibilities, conflict with others, school/work concerns, or unsafe choices.'],child:['When you have to start something - like a school project, a decision, or figuring out what to do - do you go to AI first, or do you try to figure it out yourself?','How does it feel to do schoolwork, make a choice, or figure something out without AI there to help? Is it harder?','When AI does the work for you, do you feel like you actually learned it, or do you easily forget?',"Are there things you have a really hard time starting or finishing if AI isn't helping you?",'Have you noticed that using AI a lot makes it harder to pay attention, remember things, or keep trying when something gets frustrating?','Have you ever used something AI gave you, like an answer for class, without checking if it was actually right?'],note:'This domain asks whether AI is doing cognitive work the client used to do themselves. The key question is what happens when AI is not available.'}];
+const state={isChild:false,expanded:{},responses:{},notes:{}};const ensureDomain=k=>{if(!state.responses[k])state.responses[k]={};if(!state.notes[k])state.notes[k]={}};const getQuestions=d=>state.isChild?d.child:d.adult;function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(window.__toastTimer);window.__toastTimer=setTimeout(()=>t.classList.remove('show'),1300)}
+function domainCounts(domain){ensureDomain(domain.key);const qs=getQuestions(domain);const res=state.responses[domain.key];const counts={0:0,1:0,2:0,3:0,blank:0};qs.forEach((q,idx)=>{const v=res[idx];if(v===0||v===1||v===2||v===3)counts[v]+=1;else counts.blank+=1});return counts}
+function domainBadges(c){if(c[3]>=2)return{label:'High items '+c[3],cls:'high'};if(c[3]===1)return{label:'High items 1',cls:'mid'};if(c[2]>=2)return{label:'Some 2s '+c[2],cls:'mid'};return{label:'No highs yet',cls:'low'}}
+function renderSummaryBar(){const g=document.getElementById('summaryGrid');g.innerHTML='';domainsData.forEach(d=>{const c=domainCounts(d);const el=document.createElement('div');el.className='sum';el.innerHTML='<div>'+d.title.replace(/^[0-9]+\.\s*/,'')+'</div><div>2s <b>'+c[2]+'</b> | 3s <b>'+c[3]+'</b></div>';g.appendChild(el)})}
+function renderDomains(){const root=document.getElementById('domains');root.innerHTML='';domainsData.forEach(d=>{ensureDomain(d.key);if(state.expanded[d.key]===undefined)state.expanded[d.key]=true;const c=domainCounts(d);const b=domainBadges(c);const wrap=document.createElement('section');wrap.className='domain';const head=document.createElement('header');head.innerHTML='<h3>'+d.title+'</h3>';const meta=document.createElement('div');meta.className='meta';meta.innerHTML='<span class="badge '+b.cls+'">'+b.label+'</span><span class="badge">0='+c[0]+' 1='+c[1]+' 2='+c[2]+' 3='+c[3]+' blank='+c.blank+'</span>';head.appendChild(meta);head.onclick=()=>{state.expanded[d.key]=!state.expanded[d.key];renderDomains()};const body=document.createElement('div');body.className='body';if(!state.expanded[d.key])body.style.display='none';const note=document.createElement('div');note.className='info-card';note.innerHTML='<b>Clinician note</b> - '+d.note;body.appendChild(note);getQuestions(d).forEach((q,idx)=>{const card=document.createElement('div');card.className='qcard';card.innerHTML='<div class="qhead"><div class="qnum">Q'+(idx+1)+'</div><p class="qtext"></p></div>';card.querySelector('.qtext').textContent=q;const rate=document.createElement('div');rate.className='rate';for(let v=0;v<=3;v++){const chip=document.createElement('div');chip.className='chip'+(state.responses[d.key][idx]===v?' active':'');chip.textContent=v+' '+responseLabels[v];chip.onclick=()=>{state.responses[d.key][idx]=v;renderSummaryBar();renderDomains()};rate.appendChild(chip)}card.appendChild(rate);const ta=document.createElement('textarea');ta.placeholder='Notes - examples, context, before/after, function, impairment, safety concerns...';ta.value=state.notes[d.key][idx]||'';ta.oninput=()=>state.notes[d.key][idx]=ta.value;card.appendChild(ta);body.appendChild(card)});wrap.append(head,body);root.appendChild(wrap)})}
+function buildReportText(){const lines=['AI-IMPACT Session Summary','Wording - '+(state.isChild?'Child prompts (clinician-administered)':'Adolescent & Adult phrasing (self-report)'),'Reminder - Anchors are descriptors only; not validated severity scores or clinical cutoffs. Do not compute a total score.',''];domainsData.forEach(d=>{const qs=getQuestions(d);const c=domainCounts(d);lines.push(d.title,'Counts - 0='+c[0]+', 1='+c[1]+', 2='+c[2]+', 3='+c[3]+', blank='+c.blank,'Clinician note - '+d.note);const highs=[];qs.forEach((q,idx)=>{const v=state.responses[d.key][idx];if(v===2||v===3)highs.push({idx,v,q,note:(state.notes[d.key][idx]||'').trim()})});if(!highs.length)lines.push('Elevated items (2/3) - none recorded.');else{lines.push('Elevated items (2/3)');highs.forEach(h=>{lines.push('- Q'+(h.idx+1)+' ('+h.v+' '+responseLabels[h.v]+') '+h.q);if(h.note)lines.push('  Notes - '+h.note)})}lines.push('')});return lines.join('\n')}
+function buildReportHTML(){const wrap=document.createElement('div');const ov=document.createElement('div');ov.className='report-card';ov.innerHTML='<div class="title">Overview</div><div class="kv"><div>Wording</div><div>'+(state.isChild?'Child prompts':'Adolescent & Adult phrasing')+'</div><div>Anchors</div><div>0-3</div><div>Use</div><div>Interview support</div></div>';wrap.appendChild(ov);const grid=document.createElement('div');grid.className='report-grid';domainsData.forEach(d=>{const c=domainCounts(d);const card=document.createElement('div');card.className='report-card';card.innerHTML='<div class="title">'+d.title+'</div><div class="kv"><div>0 Not at all</div><div>'+c[0]+'</div><div>1 Rarely</div><div>'+c[1]+'</div><div>2 Sometimes</div><div>'+c[2]+'</div><div>3 Often/always</div><div>'+c[3]+'</div></div><div class="small-muted">'+d.note+'</div>';const ul=document.createElement('ul');let any=false;getQuestions(d).forEach((q,idx)=>{const v=state.responses[d.key][idx];if(v===2||v===3){any=true;const li=document.createElement('li');li.textContent='Q'+(idx+1)+' ('+v+' '+responseLabels[v]+') '+q;ul.appendChild(li);const n=(state.notes[d.key][idx]||'').trim();if(n){const sub=document.createElement('div');sub.className='small-muted';sub.textContent='Notes - '+n;ul.appendChild(sub)}}});if(any)card.appendChild(ul);else{const none=document.createElement('div');none.className='small-muted';none.textContent='No elevated items (2/3) recorded.';card.appendChild(none)}grid.appendChild(card)});wrap.appendChild(grid);return wrap}
+function openModal(){const m=document.getElementById('modal');const r=document.getElementById('report');r.innerHTML='';r.appendChild(buildReportHTML());m.classList.add('show')}function closeModal(){document.getElementById('modal').classList.remove('show')}function setExpandedAll(v){domainsData.forEach(d=>state.expanded[d.key]=v);renderDomains()}function clearAll(){state.responses={};state.notes={};renderSummaryBar();renderDomains();toast('Cleared all')}
+const ageSwitch=document.getElementById('ageSwitch');function toggleAge(){state.isChild=!state.isChild;ageSwitch.classList.toggle('on',state.isChild);ageSwitch.setAttribute('aria-checked',state.isChild?'true':'false');renderSummaryBar();renderDomains();toast(state.isChild?'Child prompts':'Adolescent & adult phrasing')}ageSwitch.onclick=toggleAge;ageSwitch.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleAge()}};
+document.getElementById('expandAllBtn').onclick=()=>setExpandedAll(true);document.getElementById('collapseAllBtn').onclick=()=>setExpandedAll(false);document.getElementById('clearAllBtn').onclick=clearAll;document.getElementById('summaryBtn').onclick=openModal;document.getElementById('closeBtn').onclick=closeModal;document.getElementById('modal').onclick=e=>{if(e.target&&e.target.id==='modal')closeModal()};document.getElementById('printBtn').onclick=()=>window.print();document.getElementById('copyBtn').onclick=async()=>{try{await navigator.clipboard.writeText(buildReportText());toast('Copied summary')}catch{toast('Copy failed')}};
+document.addEventListener('keydown',e=>{if(!document.getElementById('modal').classList.contains('show'))return;if(e.key==='Escape')closeModal();if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='c'){e.preventDefault();navigator.clipboard.writeText(buildReportText()).then(()=>toast('Copied summary')).catch(()=>toast('Copy failed')}});
+ageSwitch.classList.toggle('on',state.isChild);renderSummaryBar();renderDomains();
+</script></body></html>
