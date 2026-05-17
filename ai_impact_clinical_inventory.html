@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI-IMPACT Clinical Inventory</title>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>AI-IMPACT Clinical Inventory</h1>
+    <h2>A semi-structured interviewing tool for exploring AI's role in presenting concerns</h2>
+    <p><b>Not a diagnostic instrument.</b> Use for guided interviewing and case conceptualization only. 0/1/2/3 anchors are response descriptors, not validated severity scores or cutoffs.</p>
+    <div class="pill-row">
+      <span class="pill">Adolescents &amp; Adults - Self-report phrasing</span>
+      <span class="pill">Children under 13 - Clinician-administered prompts</span>
+      <span class="pill">Do not compute a total score</span>
+      <span class="pill">Use domain patterns to guide follow-up</span>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <div class="left">
+      <div class="switch-wrap" title="Toggle between adolescent/adult phrasing and child prompts">
+        <span>Adolescent &amp; Adult</span>
+        <div class="switch" id="ageSwitch" role="switch" aria-checked="false" tabindex="0"></div>
+        <span>Child</span>
+      </div>
+      <button class="btn" id="expandAllBtn">Expand all</button>
+      <button class="btn" id="collapseAllBtn">Collapse all</button>
+    </div>
+    <div class="right">
+      <button class="btn" id="clearAllBtn">Clear all</button>
+      <button class="btn primary" id="summaryBtn">Generate summary</button>
+      <button class="btn" id="printBtn">Print</button>
+    </div>
+  </div>
+
+  <div class="info-card">
+    <b>How to use</b> - Use initial items as starting points, then probe with how/what questions about <b>frequency</b>, <b>affect</b> during vs after AI use, and <b>function</b> (comfort, avoidance, reassurance, companionship, scaffolding). You do not need to ask every item. If one domain is elevated, go deeper there and briefly screen the others.
+  </div>
+
+  <div class="anchors">
+    <div class="anchor"><b>0</b>Not at all</div>
+    <div class="anchor"><b>1</b>Rarely</div>
+    <div class="anchor"><b>2</b>Sometimes</div>
+    <div class="anchor"><b>3</b>Often or always</div>
+  </div>
+
+  <div class="summary-bar" id="summaryBar">
+    <div class="summary-grid" id="summaryGrid"></div>
+  </div>
+
+  <div id="domains"></div>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-label="Session summary">
+    <div class="modal-header">
+      <h4>AI-IMPACT Session Summary</h4>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn" id="copyBtn">Copy</button>
+        <button class="btn" onclick="window.print()">Print</button>
+        <button class="btn" id="closeBtn">Close</button>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="small-muted">Reminder - Anchors are descriptors only; do not interpret as validated severity scores or clinical cutoffs. Do not compute a total score.</div>
+      <div id="report"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">Copied</div>
+
+<script>
+  const responseLabels = {0:'Not at all',1:'Rarely',2:'Sometimes',3:'Often or always'};
+
+  const domainsData = [
+    {
+      key:'d1',
+      title:'1. AI & Worry, Stress, or Reassurance',
+      adult:[
+        'I feel anxious or on edge when I cannot access AI tools.',
+        'I worry about whether AI is giving me the right answer, even after I get one.',
+        'I use AI to check or rehearse things before doing them on my own, such as conversations, decisions, or tasks.',
+        'I feel calmer or more in control only when I know AI is available to help me.',
+        'When AI is unavailable or slow, I feel a sense of panic or dread.'
+      ],
+      child:[
+        "What happens when you can't use AI - like if the app isn't working or a grown-up says not right now? How does that feel?",
+        "When AI helps you with something, do you ever keep worrying that maybe it got it wrong, even after you already got the answer?",
+        "Do you ever check with AI first before you do something on your own - like before a conversation, or before you try a task at school?",
+        "Does it feel better knowing you can use AI if you need it? Like does having it available help you feel okay?",
+        "What's it like when AI isn't working or you just can't use it? Does it ever make you feel worried or like something is really wrong?"
+      ],
+      note:'This domain asks whether AI has become part of how the client manages worry. Probe reassurance/checking, rehearsal, avoidance, and what would happen without checking first.'
+    },
+    {
+      key:'d2',
+      title:'2. AI & Mood, Loneliness, or Avoidance',
+      adult:[
+        'I use AI when I feel sad, lonely, bored, rejected, overwhelmed, or disconnected from other people.',
+        'I turn to AI instead of doing things that usually help me feel better, such as resting, going outside, exercising, doing hobbies, or talking to someone.',
+        'I use AI to feel better or avoid things in life, but I feel more isolated, disconnected, or stuck afterward.',
+        'I use AI to avoid difficult feelings, responsibilities, schoolwork, work tasks, or conversations.',
+        'Using AI feels like one of the main ways I get through the day emotionally.',
+        'I spend time with AI even when I know I would probably benefit more from real-life support, activity, or connection.'
+      ],
+      child:[
+        "When you feel sad, bored, lonely, or kind of off - what do you usually do? Do you ever go to AI?",
+        "When you're feeling bad, do you still do things like go outside, talk to a friend, or do something you enjoy - or does using AI kind of take over instead?",
+        "After using AI for a while when you were feeling bad - how do you feel afterward? Better, or sometimes more alone or stuck than before?",
+        "Is there anything you use AI to get out of - like schoolwork, a hard conversation, or something that feels overwhelming?",
+        "Would you say that using AI is one of the main ways you get through hard days?",
+        "Are there times when part of you knows you should probably talk to someone or do something else - but you use AI instead?"
+      ],
+      note:'This domain asks whether AI has become a mood management strategy. Clarify whether it replaces activity/connection/rest and whether the client feels better or more stuck afterward.'
+    }
+  ];
+
+  const state = { isChild:false, expanded:{}, responses:{}, notes:{} };
+  function ensureDomain(key){ if(!state.responses[key]) state.responses[key] = {}; if(!state.notes[key]) state.notes[key] = {}; }
+  function getQuestions(domain){ return state.isChild ? domain.child : domain.adult; }
+  function toast(msg){ const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(window.__toastTimer); window.__toastTimer = setTimeout(() => t.classList.remove('show'), 1300); }
+  function domainCounts(domain){ ensureDomain(domain.key); const qs = getQuestions(domain); const res = state.responses[domain.key]; const counts = {0:0,1:0,2:0,3:0,blank:0}; qs.forEach((q, idx) => { const v = res[idx]; if(v===0||v===1||v===2||v===3) counts[v] += 1; else counts.blank += 1; }); return counts; }
+  function renderSummaryBar(){ const grid = document.getElementById('summaryGrid'); grid.innerHTML = ''; domainsData.forEach(d => { const counts = domainCounts(d); const el = document.createElement('div'); el.className = 'sum'; el.innerHTML = '<div class="t">' + d.title.replace(/^[0-9]+\.\s*/, '') + '</div>' + '<div class="v">2s <b>' + counts[2] + '</b> | 3s <b>' + counts[3] + '</b></div>'; grid.appendChild(el); }); }
+  renderSummaryBar();
+</script>
+</body>
+</html>
